@@ -1,4 +1,4 @@
-My Workout Tracker 🏋️‍♂️
+# Workout App — Main Version
 
 My Workout Tracker — це сучасний веб-застосунок для планування тренувань та моніторингу спортивних досягнень у реальному часі.
 
