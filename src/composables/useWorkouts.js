@@ -30,8 +30,8 @@ export function useWorkout() {
     if (!name || !category) return
     plan.value.push({ 
       id: Date.now(),
-      name,
-      category,
+      name: name.trim(),      // add .trim()
+      category: category.trim(), // add .trim()
       fields: categorySettings[category],
       plannedResults: { ...results }
     })
@@ -42,8 +42,8 @@ export function useWorkout() {
     if (index !== -1) {
       plan.value[index] = {
         ...plan.value[index],
-        name,
-        category,
+        name: name.trim(),      // add .trim()
+        category: category.trim(), // add .trim()
         fields: categorySettings[category],
         plannedResults: { ...results }
       }
