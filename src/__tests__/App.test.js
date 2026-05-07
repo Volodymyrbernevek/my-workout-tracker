@@ -14,7 +14,7 @@ describe('App.vue — Інтеграційне тестування інтерф
 
   it('має відображати початковий порожній стан програми при першому запуску', () => {
     const wrapper = mount(App)
-    
+
     expect(wrapper.text()).toContain('My Training Tracker')
     expect(wrapper.text()).toContain('План порожній.')
     expect(wrapper.text()).toContain('Сьогодні ще нічого не зроблено')
@@ -23,7 +23,7 @@ describe('App.vue — Інтеграційне тестування інтерф
 
   it('має коректно відкривати та закривати форму додавання вправи', async () => {
     const wrapper = mount(App)
-    
+
     await wrapper.find('.main-add-btn').trigger('click')
     expect(wrapper.findComponent(WorkoutForm).exists()).toBe(true)
 
@@ -33,13 +33,15 @@ describe('App.vue — Інтеграційне тестування інтерф
 
   it('має успішно додавати нову силову вправу до плану', async () => {
     const wrapper = mount(App)
-    
+
     await wrapper.find('.main-add-btn').trigger('click')
     const formComponent = wrapper.findComponent(WorkoutForm)
 
     await formComponent.find('select').setValue('Силові')
-    await formComponent.find('input[type="text"]').setValue('Присідання зі штангою')
-    
+    await formComponent
+      .find('input[type="text"]')
+      .setValue('Присідання зі штангою')
+
     const numberInputs = formComponent.findAll('input[type="number"]')
     await numberInputs[0].setValue(80) // Вага (kg)
     await numberInputs[1].setValue(10) // Повторення (reps)
@@ -53,14 +55,15 @@ describe('App.vue — Інтеграційне тестування інтерф
   })
 
   it('має переносити вправу до блоку історії при натисканні на "Виконано"', async () => {
-    
-    const mockPlan = [{
-      id: 111,
-      name: 'Біг',
-      category: 'Кардіо',
-      fields: ['distance', 'duration'],
-      plannedResults: { distance: 5, duration: 25 }
-    }]
+    const mockPlan = [
+      {
+        id: 111,
+        name: 'Біг',
+        category: 'Кардіо',
+        fields: ['distance', 'duration'],
+        plannedResults: { distance: 5, duration: 25 }
+      }
+    ]
     localStorage.setItem('workout-plan', JSON.stringify(mockPlan))
 
     const wrapper = mount(App)
@@ -76,13 +79,15 @@ describe('App.vue — Інтеграційне тестування інтерф
   })
 
   it('має дозволяти редагувати параметри запланованої вправи', async () => {
-    const mockPlan = [{
-      id: 222,
-      name: 'Планка',
-      category: 'Стрейчинг',
-      fields: ['duration'],
-      plannedResults: { duration: 1 }
-    }]
+    const mockPlan = [
+      {
+        id: 222,
+        name: 'Планка',
+        category: 'Стрейчинг',
+        fields: ['duration'],
+        plannedResults: { duration: 1 }
+      }
+    ]
     localStorage.setItem('workout-plan', JSON.stringify(mockPlan))
 
     const wrapper = mount(App)
@@ -99,14 +104,15 @@ describe('App.vue — Інтеграційне тестування інтерф
     expect(wrapper.findComponent(PlanItem).text()).toContain('3хв')
   })
 
- 
   it('має показувати підказку про останнє тренування, якщо така вправа є в історії', async () => {
-    const mockHistory = [{
-      id: 333,
-      exercise: 'Жим лежачи',
-      date: new Date().toISOString(),
-      results: { weight: 100, reps: 5, distance: 0, duration: 0 }
-    }]
+    const mockHistory = [
+      {
+        id: 333,
+        exercise: 'Жим лежачи',
+        date: new Date().toISOString(),
+        results: { weight: 100, reps: 5, distance: 0, duration: 0 }
+      }
+    ]
     localStorage.setItem('workout-history', JSON.stringify(mockHistory))
 
     const wrapper = mount(App)

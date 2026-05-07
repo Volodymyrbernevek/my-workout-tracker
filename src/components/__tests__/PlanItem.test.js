@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest'
 import PlanItem from '../PlanItem.vue'
 
 describe('PlanItem.vue', () => {
-  // Тестові дані 
+  // Тестові дані
   const mockItem = {
     id: 42,
     name: 'Присідання',
@@ -40,7 +40,6 @@ describe('PlanItem.vue', () => {
     expect(wrapper.emitted().complete[0]).toEqual([42])
   })
 
-  
   it('має викликати подію "edit" при кліку на інформаційну частину картки', async () => {
     const wrapper = mount(PlanItem, {
       props: { item: mockItem }

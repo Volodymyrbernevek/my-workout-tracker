@@ -1,8 +1,4 @@
 // @vitest-environment jsdom
-
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { useWorkout } from '../useWorkouts'
-
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { useWorkout } from '../useWorkouts'
 import { nextTick } from 'vue'
@@ -22,7 +18,7 @@ describe('useWorkout composable', () => {
   it('addToPlan: повинен коректно додавати вправу до плану з потрібними полями', () => {
     const { plan, addToPlan } = useWorkout()
     addToPlan('Присідання', 'Силові', { weight: 50, reps: 10 })
-    
+
     expect(plan.value.length).toBe(1)
     expect(plan.value[0].name).toBe('Присідання')
     expect(plan.value[0].category).toBe('Силові')
@@ -33,7 +29,7 @@ describe('useWorkout composable', () => {
     const { plan, addToPlan } = useWorkout()
     addToPlan('', 'Силові', { weight: 50 })
     addToPlan('Біг', '', { distance: 5 })
-    
+
     expect(plan.value.length).toBe(0)
   })
 
@@ -42,7 +38,10 @@ describe('useWorkout composable', () => {
     addToPlan('Присідання', 'Силові', { weight: 50, reps: 10 })
     const itemId = plan.value[0].id
 
-    updatePlanItem(itemId, 'Важкі присідання', 'Силові', { weight: 60, reps: 8 })
+    updatePlanItem(itemId, 'Важкі присідання', 'Силові', {
+      weight: 60,
+      reps: 8
+    })
 
     expect(plan.value[0].name).toBe('Важкі присідання')
     expect(plan.value[0].plannedResults.weight).toBe(60)
@@ -65,11 +64,26 @@ describe('useWorkout composable', () => {
 
   it('getLastResult: повинен знаходити останній запит вправи в історії', () => {
     const { history, getLastResult } = useWorkout()
-    
+
     history.value = [
-      { id: 1, exercise: 'Присідання', date: '2026-05-05T10:00:00.000Z', results: { weight: 40, reps: 12 } },
-      { id: 2, exercise: 'Біг', date: '2026-05-05T11:00:00.000Z', results: { distance: 3 } },
-      { id: 3, exercise: 'Присідання', date: '2026-05-06T10:00:00.000Z', results: { weight: 50, reps: 10 } }
+      {
+        id: 1,
+        exercise: 'Присідання',
+        date: '2026-05-05T10:00:00.000Z',
+        results: { weight: 40, reps: 12 }
+      },
+      {
+        id: 2,
+        exercise: 'Біг',
+        date: '2026-05-05T11:00:00.000Z',
+        results: { distance: 3 }
+      },
+      {
+        id: 3,
+        exercise: 'Присідання',
+        date: '2026-05-06T10:00:00.000Z',
+        results: { weight: 50, reps: 10 }
+      }
     ]
 
     const lastResult = getLastResult('Присідання')
@@ -79,10 +93,10 @@ describe('useWorkout composable', () => {
 
   it('watch: повинен зберігати дані в localStorage при зміні plan', async () => {
     const setItemSpy = vi.spyOn(Storage.prototype, 'setItem')
-    const { plan, addToPlan } = useWorkout()
-    
+    const { addToPlan } = useWorkout()
+
     addToPlan('Розтяжка', 'Стрейчинг', { duration: 15 })
-    
+
     await nextTick()
 
     expect(setItemSpy).toHaveBeenCalledWith('workout-plan', expect.any(String))

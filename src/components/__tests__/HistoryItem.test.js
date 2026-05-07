@@ -10,7 +10,7 @@ describe('HistoryItem.vue', () => {
       results: { weight: 50, reps: 10, distance: 0, duration: 0 }
     }
     const wrapper = mount(HistoryItem, { props: { item } })
-    
+
     expect(wrapper.text()).toContain('Присідання')
     expect(wrapper.text()).toContain('50кг')
     expect(wrapper.text()).toContain('10')
@@ -23,7 +23,7 @@ describe('HistoryItem.vue', () => {
       results: { weight: 0, reps: 0, distance: 5, duration: 30 }
     }
     const wrapper = mount(HistoryItem, { props: { item } })
-    
+
     expect(wrapper.text()).toContain('Біг')
     expect(wrapper.text()).toContain('5км')
     expect(wrapper.text()).toContain('30хв')
