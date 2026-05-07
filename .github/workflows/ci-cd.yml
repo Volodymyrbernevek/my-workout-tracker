@@ -1,0 +1,40 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    [cite_start]runs-on: ubuntu-latest # Використовуємо стандартний образ Linux 
+
+    steps:
+      - name: Checkout repository
+        [cite_start]uses: actions/checkout@v4 # Отримуємо код із репозиторію
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          [cite_start]node-version: 20 # Встановлюємо стабільну версію Node.js
+          cache: 'npm'
+
+      - name: Install dependencies
+        [cite_start]run: npm ci # Чисте встановлення бібліотек із файлу lock
+
+      - name: Run linter
+        [cite_start]run: npm run lint # Перевірка якості коду
+
+      - name: Run unit tests
+        [cite_start]run: npm run test:unit # Автоматичний запуск тестів
+
+      - name: Build for production
+        [cite_start]run: npm run build # Перевірка, що проєкт збирається без помилок
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          [cite_start]path: dist # Збереження зібраного артефакту [cite: 496, 465-468]
