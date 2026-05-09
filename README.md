@@ -1,5 +1,7 @@
 # My Training Tracker 🏋️‍♂️
 
+[![CI/CD Pipeline](https://github.com/Volodymyrbernevek/my-workout-tracker/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/Volodymyrbernevek/my-workout-tracker/actions/workflows/ci-cd.yml)
+
 My Workout Tracker — це сучасний веб-застосунок для планування тренувань та моніторингу спортивних досягнень у реальному часі.
 
 🎯 Концепція MVP (Minimum Viable Product)
