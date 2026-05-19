@@ -2,9 +2,6 @@ import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
 
-createApp(App).mount('#app')
-
-
 import posthog from 'posthog-js'
 
 posthog.init('phc_ARXkGMBPGeBnDuXMGMP5v8EokkQ85wgBTnR4MUth8q9c', {
@@ -13,3 +10,5 @@ posthog.init('phc_ARXkGMBPGeBnDuXMGMP5v8EokkQ85wgBTnR4MUth8q9c', {
   
   person_profiles: 'always'
 })
+
+createApp(App).mount('#app')
