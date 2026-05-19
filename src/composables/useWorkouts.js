@@ -1,4 +1,5 @@
 import { ref, watch } from 'vue'
+import posthog from 'posthog-js'
 
 export function useWorkout() {
   const loadData = (key) => {
@@ -34,11 +35,18 @@ export function useWorkout() {
       fields: categorySettings[category],
       plannedResults: { ...results }
     })
+    posthog.capture('exercise_added', {
+      exercise_name: name.trim(),
+      category: category.trim(),
+      plan_length: plan.value.length
+    })
   }
 
   const updatePlanItem = (id, name, category, results) => {
     const index = plan.value.findIndex((item) => item.id === id)
     if (index !== -1) {
+      const oldItem = { ...plan.value[index] }
+
       plan.value[index] = {
         ...plan.value[index],
         name: name.trim(), // add .trim()
@@ -46,6 +54,12 @@ export function useWorkout() {
         fields: categorySettings[category],
         plannedResults: { ...results }
       }
+      posthog.capture('exercise_edited', {
+        exercise_id: id,
+        category: category.trim(),
+        is_name_changed: oldItem.name !== name.trim(),
+        is_category_changed: oldItem.category !== category.trim()
+      })
     }
   }
 
@@ -59,6 +73,12 @@ export function useWorkout() {
         results: { ...item.plannedResults }
       })
       plan.value = plan.value.filter((i) => i.id !== planId)
+
+      posthog.capture('exercise_logged_to_history', {
+        exercise_name: item.name,
+        category: item.category,
+        total_history_count: history.value.length
+      })
     }
   }
 
