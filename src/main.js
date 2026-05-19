@@ -5,9 +5,7 @@ import App from './App.vue'
 import posthog from 'posthog-js'
 
 posthog.init('phc_ARXkGMBPGeBmDuXMGMp5v8EokkQ85wgBTnR4MUth8q9c', {
-  api_host: window.location.origin + '/ingest',
-  ui_host: 'https://us.posthog.com',
-  
+  api_host: 'https://us.posthog.com',
   person_profiles: 'always'
 })
 
