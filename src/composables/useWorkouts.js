@@ -7,12 +7,18 @@ export function useWorkout() {
     try {
       let id = localStorage.getItem("ph_distinct_id")
       if (!id) {
-        id = crypto.randomUUID() // Генерує унікальний UUID типу '123e4567-e89b...'
+        // Додаємо window. перед crypto
+        if (typeof window !== 'undefined' && window.crypto && window.crypto.randomUUID) {
+          id = window.crypto.randomUUID()
+        } else {
+          id = 'user-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9)
+        }
         localStorage.setItem("ph_distinct_id", id)
       }
       return id
     } catch (e) {
-      return "backup-student-id"
+      console.error("Помилка генерації ID:", e)
+      return "backup-student-id-12345"
     }
   }
 
