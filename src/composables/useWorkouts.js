@@ -2,6 +2,27 @@ import { ref, watch } from 'vue'
 import posthog from 'posthog-js'
 
 export function useWorkout() {
+  
+  const getOrCreateDistinctId = () => {
+    try {
+      let id = localStorage.getItem("ph_distinct_id")
+      if (!id) {
+        // Додаємо window. перед crypto
+        if (typeof window !== 'undefined' && window.crypto && window.crypto.randomUUID) {
+          id = window.crypto.randomUUID()
+        } else {
+          id = 'user-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9)
+        }
+        localStorage.setItem("ph_distinct_id", id)
+      }
+      return id
+    } catch (e) {
+      console.error("Помилка генерації ID:", e)
+      return "backup-student-id-12345"
+    }
+  }
+
+
   const loadData = (key) => {
     try {
       const saved = localStorage.getItem(key)
@@ -14,6 +35,9 @@ export function useWorkout() {
 
   const history = ref(loadData('workout-history'))
   const plan = ref(loadData('workout-plan'))
+  
+  // РЕАКТИВНИЙ ПРАПОРЕЦЬ ДЛЯ ІНТЕРФЕЙСУ
+  const showCardioFilter = ref(false)
 
   const categorySettings = {
     Силові: ['weight', 'reps'],
@@ -30,8 +54,8 @@ export function useWorkout() {
     if (!name || !category) return
     plan.value.push({
       id: Date.now(),
-      name: name.trim(), // add .trim()
-      category: category.trim(), // add .trim()
+      name: name.trim(),
+      category: category.trim(),
       fields: categorySettings[category],
       plannedResults: { ...results }
     })
@@ -49,11 +73,12 @@ export function useWorkout() {
 
       plan.value[index] = {
         ...plan.value[index],
-        name: name.trim(), // add .trim()
-        category: category.trim(), // add .trim()
+        name: name.trim(),
+        category: category.trim(),
         fields: categorySettings[category],
         plannedResults: { ...results }
       }
+    
       posthog.capture('exercise_edited', {
         exercise_id: id,
         category: category.trim(),
@@ -82,6 +107,22 @@ export function useWorkout() {
     }
   }
 
+  // АВТОМАТИЧНА ІДЕНТИФІКАЦІЯ ТА СЛУХАЧ FEATURE FLAGS
+  const userId = getOrCreateDistinctId()
+  
+  // Кажемо серверу PostHog, хто ми, ЩОБ ВІН ВІДДАВ НАМ ПРАПОРЦІ
+  posthog.identify(userId)
+  posthog.reloadFeatureFlags()
+  // БЕЗПЕЧНА СИНХРОНІЗАЦІЯ З СЕРВЕРОМ POSTHOG
+  posthog.onFeatureFlags(() => {
+    // Перевіряємо статус прапорця в PostHog і записуємо результат у змінну (true або false)
+    showCardioFilter.value = !!posthog.isFeatureEnabled('show-cardio-filter')
+    
+    if (showCardioFilter.value) {
+      posthog.capture('feature_flag_displayed', { flag_key: 'show-cardio-filter' })
+    }
+  })
+
   watch(
     [plan, history],
     ([newPlan, newHistory]) => {
@@ -98,6 +139,7 @@ export function useWorkout() {
     completeExercise,
     getLastResult,
     history,
-    categorySettings
+    categorySettings,
+    showCardioFilter // Обов'язково віддаємо прапорець назовні для App.vue
   }
 }

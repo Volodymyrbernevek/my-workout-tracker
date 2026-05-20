@@ -41,7 +41,14 @@
     </section>
 
     <section class="plan-section">
-      <h3>📍 Потрібно виконати (натисніть для редагування)</h3>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h3 style="margin: 0;">📍 Потрібно виконати (натисніть для редагування)</h3>
+        
+        <button v-show="showCardioFilter" style="padding: 6px 12px; background: #42b883; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">
+          Тільки Кардіо 🏃‍♂️
+        </button>
+      </div>
+      
       <div v-if="plan.length === 0" class="empty">План порожній.</div>
       <div class="plan-grid">
         <PlanItem
@@ -81,7 +88,8 @@ const {
   completeExercise,
   history,
   categorySettings,
-  getLastResult
+  getLastResult,
+  showCardioFilter
 } = useWorkout()
 
 const isCreating = ref(false)
