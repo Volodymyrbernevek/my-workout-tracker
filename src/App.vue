@@ -68,6 +68,9 @@
       </div>
       <HistoryItem v-for="item in todaysHistory" :key="item.id" :item="item" />
     </section>
+    <button class="main-add-btn" style="border-color: red; color: red;" @click="throwWorkoutError">
+      💥 Зламати трекер (Тест Sentry)
+    </button>
   </div>
 </template>
 
@@ -80,6 +83,7 @@ import AppHeader from './components/AppHeader.vue'
 import WorkoutForm from './components/WorkoutForm.vue'
 import PlanItem from './components/PlanItem.vue'
 import HistoryItem from './components/HistoryItem.vue'
+import * as Sentry from '@sentry/vue'
 
 const {
   plan,
@@ -89,7 +93,7 @@ const {
   history,
   categorySettings,
   getLastResult,
-  showCardioFilter
+  showCardioFilter,
 } = useWorkout()
 
 const isCreating = ref(false)
@@ -100,6 +104,20 @@ const form = reactive({ weight: 0, reps: 0, distance: 0, duration: 0 })
 const pastData = computed(() =>
   exerciseName.value ? getLastResult(exerciseName.value) : null
 )
+
+const throwWorkoutError = () => {
+  const currentPlanCount = plan.value.length
+
+  // Додаємо кастомну хлібну крихту для контексту розробника [cite: 1117]
+  Sentry.addBreadcrumb({
+    message: 'Користувач натиснув кнопку критичного тесту',
+    category: 'user.action',
+    data: { planCountBeforeCrash: currentPlanCount }
+  })
+
+  // Генеруємо виняток [cite: 1111]
+  throw new Error("Sentry Test Error: На жаль, не вдалося зберегти поточну сесію тренування!")
+}
 
 const todaysHistory = computed(() => {
   const today = new Date().toLocaleDateString()
