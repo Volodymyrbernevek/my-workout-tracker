@@ -4,6 +4,8 @@ import App from './App.vue'
 
 import posthog from 'posthog-js'
 
+window.posthog = posthog
+
 posthog.init('phc_ARXkGMBPGeBmDuXMGMp5v8EokkQ85wgBTnR4MUth8q9c', {
   api_host: 'https://us.i.posthog.com', 
   
