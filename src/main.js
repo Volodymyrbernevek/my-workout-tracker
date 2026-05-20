@@ -2,10 +2,7 @@ import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
 
-import * as posthogModule from 'posthog-js/dist/array.full.no-external'
-
-// Хак для Vite, чтобы правильно вытащить инстанс
-const posthog = posthogModule.default || posthogModule
+import posthog from 'posthog-js'
 
 if (typeof window !== 'undefined') {
   window.posthog = posthog
