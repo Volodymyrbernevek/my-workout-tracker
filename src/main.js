@@ -2,9 +2,14 @@ import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
 
-import posthog from 'posthog-js'
+import * as posthogModule from 'posthog-js/dist/array.full.no-external'
 
-window.posthog = posthog
+// Хак для Vite, чтобы правильно вытащить инстанс
+const posthog = posthogModule.default || posthogModule
+
+if (typeof window !== 'undefined') {
+  window.posthog = posthog
+}
 
 posthog.init('phc_ARXkGMBPGeBmDuXMGMp5v8EokkQ85wgBTnR4MUth8q9c', {
   api_host: 'https://us.i.posthog.com', 
@@ -14,8 +19,10 @@ posthog.init('phc_ARXkGMBPGeBmDuXMGMp5v8EokkQ85wgBTnR4MUth8q9c', {
   
   person_profiles: 'always',
   
-  // Примусово кажемо клієнту запускати запис
-  disable_session_recording: false 
+  disable_session_recording: false,
+  session_recording: {
+    recorderVersion: 'v2'
+  } 
 })
 
 createApp(App).mount('#app')
