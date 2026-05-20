@@ -1,5 +1,6 @@
 import { ref, watch } from 'vue'
 import posthog from 'posthog-js'
+import * as Sentry from '@sentry/vue'
 
 export function useWorkout() {
   
@@ -22,6 +23,26 @@ export function useWorkout() {
     }
   }
 
+  if (typeof window !== 'undefined') {
+    window.addEventListener('beforeunload', () => {
+      // 1. Негайно очищаємо користувача в Sentry перед закриттям вкладки 
+      Sentry.setUser(null)
+      
+      // 2. Скидаємо профіль і сесію в PostHog
+      posthog.reset()
+      
+      // 3. Видаляємо згенерований ID з localStorage
+      localStorage.removeItem("ph_distinct_id")
+      
+      // 4. Очищаємо тренувальні дані (опціонально, для повної симуляції логауту)
+      plan.value = []
+      history.value = []
+      localStorage.removeItem("workout-plan")
+      localStorage.removeItem("workout-history")
+    });
+  }
+
+  
 
   const loadData = (key) => {
     try {
@@ -109,6 +130,15 @@ export function useWorkout() {
 
   // АВТОМАТИЧНА ІДЕНТИФІКАЦІЯ ТА СЛУХАЧ FEATURE FLAGS
   const userId = getOrCreateDistinctId()
+  // Прив'язуємо контекст користувача в Sentry [cite: 1316, 1317]
+  
+  Sentry.setUser({
+  id: userId,
+  email: `student-${userId.substring(0, 5)}@workout.com`, // Симульований email для лабораторної [cite: 1320]
+  segment: "local_tester" // Кастомний тег сегментації [cite: 1321]
+  })
+  Sentry.setTag("user_device_mode", "vite_dev")
+  
   
   // Кажемо серверу PostHog, хто ми, ЩОБ ВІН ВІДДАВ НАМ ПРАПОРЦІ
   posthog.identify(userId)
@@ -140,6 +170,6 @@ export function useWorkout() {
     getLastResult,
     history,
     categorySettings,
-    showCardioFilter // Обов'язково віддаємо прапорець назовні для App.vue
+    showCardioFilter
   }
 }
